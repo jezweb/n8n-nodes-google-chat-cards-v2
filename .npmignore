@@ -1,0 +1,41 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Development files
+.git/
+.gitignore
+.claude/
+node_modules/
+SCRATCHPAD.md
+test-node.js
+TESTING.md
+INSTALLATION.md
+example-workflow.json
+tsconfig.json
+.eslintrc.js
+.prettierrc.js
+
+# Build artifacts
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Keep only dist folder and necessary files
+!dist/
+!package.json
+!README.md
+!LICENSE

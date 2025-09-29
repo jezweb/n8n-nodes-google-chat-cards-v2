@@ -1,0 +1,80 @@
+{
+  "name": "Google Chat Cards v2 Example",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e1c2a3f4-5b6c-7d8e-9f0a-1b2c3d4e5f6a",
+      "name": "When clicking \"Test Workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "spaceId": "spaces/YOUR_SPACE_ID_HERE",
+        "buildMode": "simple",
+        "simpleHeader": {
+          "title": "Workflow Complete ✅",
+          "subtitle": "All tasks finished successfully",
+          "imageUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.png",
+          "imageType": "CIRCLE"
+        },
+        "simpleText": "Your automated workflow has completed successfully.\n\n**Summary:**\n• 15 items processed\n• 0 errors\n• Execution time: 2.3s",
+        "simpleTextFormat": "markdown",
+        "simpleButtons": {
+          "button": [
+            {
+              "text": "View Results",
+              "actionType": "openLink",
+              "url": "https://example.com/results"
+            },
+            {
+              "text": "Run Again",
+              "actionType": "action",
+              "actionMethod": "runWorkflow",
+              "actionParameters": "{\"workflowId\": \"123\"}"
+            }
+          ]
+        },
+        "simpleWidgets": {
+          "divider": [
+            {
+              "enabled": true
+            }
+          ],
+          "decoratedText": [
+            {
+              "text": "Next run scheduled",
+              "topLabel": "Schedule",
+              "bottomLabel": "Tomorrow at 9:00 AM",
+              "icon": "CLOCK"
+            }
+          ]
+        }
+      },
+      "id": "b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7",
+      "name": "Google Chat Cards v2",
+      "type": "n8n-nodes-googleChatCardsV2.googleChatCardsV2",
+      "typeVersion": 1,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "When clicking \"Test Workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Google Chat Cards v2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "versionId": "1"
+}
