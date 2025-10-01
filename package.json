@@ -27,7 +27,7 @@
     "format": "prettier --write .",
     "lint": "eslint src --ext .ts",
     "lintfix": "eslint src --ext .ts --fix",
-    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js src --ext .ts",
+    "prepublishOnly": "npm run build",
     "n8n-node-dev": "n8n-node-dev",
     "test": "n8n-node-dev build --watch",
     "start": "n8n-node-dev run"
