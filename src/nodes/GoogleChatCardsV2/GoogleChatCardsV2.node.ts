@@ -446,42 +446,75 @@ export class GoogleChatCardsV2 implements INodeType {
 								description: 'Optional title for the grid',
 							},
 							{
-								displayName: 'Rows',
-								name: 'rows',
+								displayName: 'Column Count',
+								name: 'columnCount',
+								type: 'number',
+								default: 2,
+								description: 'Number of columns (items will automatically arrange into rows)',
+								typeOptions: {
+									minValue: 1,
+									maxValue: 4,
+								},
+							},
+							{
+								displayName: 'Grid Items',
+								name: 'items',
 								type: 'fixedCollection',
 								typeOptions: {
 									multipleValues: true,
 									sortable: true,
 								},
 								default: {},
-								placeholder: 'Add Row',
+								placeholder: 'Add Item',
+								description: 'Items will be arranged into rows based on column count',
 								options: [
 									{
-										name: 'row',
-										displayName: 'Row',
+										name: 'item',
+										displayName: 'Grid Item',
 										values: [
 											{
-												displayName: 'Cells',
-												name: 'cells',
+												displayName: 'Title',
+												name: 'title',
 												type: 'string',
 												default: '',
-												description: 'Comma-separated cell values (e.g., "Name, Value, Status")',
+												description: 'Item title',
 												required: true,
+											},
+											{
+												displayName: 'Subtitle',
+												name: 'subtitle',
+												type: 'string',
+												default: '',
+												description: 'Item subtitle (optional)',
+											},
+											{
+												displayName: 'Image URL',
+												name: 'imageUri',
+												type: 'string',
+												default: '',
+												description: 'HTTPS URL for the item image',
+											},
+											{
+												displayName: 'Image Style',
+												name: 'imageStyle',
+												type: 'options',
+												default: 'SQUARE',
+												options: [
+													{ name: 'Square', value: 'SQUARE' },
+													{ name: 'Circle', value: 'CIRCLE' },
+												],
+												description: 'How to crop the image',
+											},
+											{
+												displayName: 'On Click URL',
+												name: 'onClickUrl',
+												type: 'string',
+												default: '',
+												description: 'URL to open when item is clicked',
 											},
 										],
 									},
 								],
-							},
-							{
-								displayName: 'Column Count',
-								name: 'columnCount',
-								type: 'number',
-								default: 2,
-								description: 'Number of columns in the grid',
-								typeOptions: {
-									minValue: 1,
-									maxValue: 3,
-								},
 							},
 						],
 					},
@@ -880,16 +913,40 @@ function buildSimpleCard(this: IExecuteFunctions, itemIndex: number): any {
 					gridWidget.grid.title = grid.title;
 				}
 
-				if (grid.rows && grid.rows.row) {
-					for (const row of grid.rows.row) {
-						const cells = row.cells.split(',').map((cell: string) => cell.trim());
-						for (const cellText of cells) {
-							gridWidget.grid.items.push({
-								textParagraph: {
-									text: cellText,
-								},
-							});
+				if (grid.items && grid.items.item) {
+					for (const item of grid.items.item) {
+						const gridItem: any = {};
+
+						// Add title (required)
+						if (item.title) {
+							gridItem.title = item.title;
 						}
+
+						// Add subtitle if provided
+						if (item.subtitle) {
+							gridItem.subtitle = item.subtitle;
+						}
+
+						// Add image if provided
+						if (item.imageUri) {
+							gridItem.image = {
+								imageUri: item.imageUri,
+								cropStyle: {
+									type: item.imageStyle || 'SQUARE',
+								},
+							};
+						}
+
+						// Add onClick if URL provided
+						if (item.onClickUrl) {
+							gridItem.onClick = {
+								openLink: {
+									url: item.onClickUrl,
+								},
+							};
+						}
+
+						gridWidget.grid.items.push(gridItem);
 					}
 				}
 

@@ -244,7 +244,15 @@ Visual separators between content sections.
 
 ## Changelog
 
-### v0.2.0 (Latest)
+### v0.2.2 (Latest)
+- ✅ Fixed Grid widget to use Items instead of confusing Rows/Cells structure
+- ✅ Grid items now support title, subtitle, image, and click actions
+- ✅ Clearer UI that explains items auto-arrange into rows based on columns
+
+### v0.2.1
+- ✅ Fixed webhook 503 error by changing request method
+
+### v0.2.0
 - ✅ Added webhook URL authentication method
 - ✅ New Grid widget for organized layouts
 - ✅ Text Input widget for user feedback

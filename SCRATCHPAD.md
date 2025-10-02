@@ -716,6 +716,134 @@ class CardValidator {
 5. Should we add a "Import from Chat Builder" feature for the Google tool?
 6. How to handle collaborative features (multiple people editing)?
 
+## 📝 Grid Widget Implementation Notes (v0.2.x Fix)
+
+### Current Issue
+The Grid widget implementation is confusing because it uses "Rows" with comma-separated "Cells", which doesn't align with how Google Chat's Grid widget actually works.
+
+### How Google Chat Grid Actually Works
+```json
+{
+  "grid": {
+    "title": "Grid Title",
+    "columnCount": 2,  // Number of columns (1-4)
+    "items": [  // Array of items, NOT rows
+      {
+        "id": "item1",
+        "image": {
+          "imageUri": "https://example.com/image1.png",
+          "cropStyle": { "type": "SQUARE" }
+        },
+        "title": "Item 1 Title",
+        "subtitle": "Item 1 Subtitle"
+      },
+      {
+        "id": "item2",
+        "image": {
+          "imageUri": "https://example.com/image2.png"
+        },
+        "title": "Item 2 Title",
+        "subtitle": "Item 2 Subtitle"
+      }
+      // Items are automatically arranged into rows based on columnCount
+      // 6 items with 2 columns = 3 rows automatically
+    ]
+  }
+}
+```
+
+### The Problem with Current Implementation
+- UI shows "Rows" → "Cells" with comma-separated values
+- This creates confusion - users think they're defining rows
+- Google Chat doesn't work with rows, it works with items and columns
+- The comma-separated approach doesn't support rich item properties
+
+### Correct Implementation Design
+```typescript
+// Instead of:
+{
+  name: 'rows',
+  type: 'fixedCollection',
+  options: [{
+    name: 'row',
+    values: [{
+      name: 'cells',
+      type: 'string',  // "Cell1, Cell2, Cell3"
+    }]
+  }]
+}
+
+// Should be:
+{
+  name: 'items',
+  type: 'fixedCollection',
+  options: [{
+    name: 'gridItem',
+    values: [
+      {
+        name: 'title',
+        type: 'string',
+        description: 'Item title text'
+      },
+      {
+        name: 'subtitle',
+        type: 'string',
+        description: 'Item subtitle (optional)'
+      },
+      {
+        name: 'imageUri',
+        type: 'string',
+        description: 'Item image URL (optional)'
+      },
+      {
+        name: 'imageStyle',
+        type: 'options',
+        options: ['SQUARE', 'CIRCLE']
+      },
+      {
+        name: 'onClickUrl',
+        type: 'string',
+        description: 'URL to open when item is clicked'
+      }
+    ]
+  }]
+}
+```
+
+### Visual Example
+**Current (Confusing)**:
+```
+Grid Title: [Product Grid]
+Rows:
+  Row 1: Cells: "Product A, $19.99, In Stock"
+  Row 2: Cells: "Product B, $29.99, Out of Stock"
+Column Count: [3]
+```
+
+**Fixed (Clear)**:
+```
+Grid Title: [Product Grid]
+Column Count: [2]
+Grid Items:
+  Item 1:
+    - Title: Product A
+    - Subtitle: $19.99
+    - Image: https://...
+  Item 2:
+    - Title: Product B
+    - Subtitle: $29.99
+    - Image: https://...
+  Item 3:
+    - Title: Product C
+    - Subtitle: $39.99
+    - Image: https://...
+  Item 4:
+    - Title: Product D
+    - Subtitle: $49.99
+    - Image: https://...
+```
+With 2 columns, these 4 items automatically become 2 rows.
+
 ## 🚀 MVP Definition
 
 **Minimum Viable Product includes:**
