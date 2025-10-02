@@ -12,9 +12,12 @@ This is an n8n community node that lets you create rich, interactive Google Chat
   - Images with click actions
   - Buttons with custom actions
   - Decorated text with icons
+  - Grids for organized layouts
+  - Text inputs for user feedback
+  - Selection inputs (dropdown, radio, checkbox)
   - Dividers for visual separation
 - 🧵 **Thread Support** - Group messages in conversations
-- ⚡ **Google Chat OAuth2** - Secure authentication
+- ⚡ **Dual Authentication** - OAuth2 or Webhook URL
 
 ## Installation
 
@@ -34,9 +37,21 @@ Then restart your n8n instance.
 
 ## Setup
 
-### Google Cloud Console Setup
+### Option 1: Webhook URL (Simple)
 
-1. **Enable Google Chat API**:
+1. **Get Webhook URL**:
+   - Open your Google Chat space
+   - Click on the space name > "Manage webhooks"
+   - Create a new webhook and copy the URL
+
+2. **Configure in n8n**:
+   - Select "Webhook URL (Simple)" as authentication method
+   - Paste your webhook URL
+   - Start sending messages!
+
+### Option 2: OAuth2 (Advanced)
+
+1. **Google Cloud Console Setup**:
    - Go to [Google Cloud Console](https://console.cloud.google.com/)
    - Create a new project or select existing
    - Enable the Google Chat API
@@ -50,12 +65,11 @@ Then restart your n8n instance.
 3. **Configure OAuth Consent Screen**:
    - Add required scopes: `https://www.googleapis.com/auth/chat.messages`
 
-### n8n Credentials Setup
-
-1. In n8n, go to **Credentials**
-2. Create new **Google Chat OAuth2 API** credential
-3. Enter your Client ID and Client Secret
-4. Authenticate with Google
+4. **n8n Credentials Setup**:
+   - In n8n, go to **Credentials**
+   - Create new **Google Chat OAuth2 API** credential
+   - Enter your Client ID and Client Secret
+   - Authenticate with Google
 
 ## Usage
 
@@ -125,6 +139,25 @@ Interactive buttons that can:
 - Open URLs
 - Trigger custom actions with parameters
 
+### Grid (v0.2.0)
+Display items in an organized grid layout with:
+- Configurable columns
+- Image support
+- Title and subtitle for each item
+
+### Text Input (v0.2.0)
+Collect user input with:
+- Single or multi-line text fields
+- Labels and hints
+- Initial values
+
+### Selection Input (v0.2.0)
+Provide selection options:
+- Dropdown menus
+- Radio buttons
+- Checkboxes
+- Multi-select support
+
 ### Dividers
 Visual separators between content sections.
 
@@ -171,6 +204,37 @@ Visual separators between content sections.
 }
 ```
 
+### Feedback Form (v0.2.0)
+```javascript
+// Using new input widgets
+{
+  "buildMode": "simple",
+  "simpleText": "Please provide your feedback",
+  "simpleWidgets": {
+    "textInput": [
+      {
+        "name": "feedback",
+        "label": "Your Comments",
+        "multiline": true,
+        "hintText": "Tell us what you think"
+      }
+    ],
+    "selectionInput": [
+      {
+        "name": "rating",
+        "label": "Rate our service",
+        "type": "dropdown",
+        "items": [
+          {"text": "Excellent", "value": "5"},
+          {"text": "Good", "value": "4"},
+          {"text": "Average", "value": "3"}
+        ]
+      }
+    ]
+  }
+}
+```
+
 ## Limitations
 
 - Google Chat supports limited markdown (bold, italic, strikethrough)
@@ -178,13 +242,26 @@ Visual separators between content sections.
 - Maximum 100 widgets per card
 - Some advanced Cards v2 features may require JSON mode
 
+## Changelog
+
+### v0.2.0 (Latest)
+- ✅ Added webhook URL authentication method
+- ✅ New Grid widget for organized layouts
+- ✅ Text Input widget for user feedback
+- ✅ Selection Input widget (dropdown, radio, checkbox)
+- ✅ Enhanced Simple Mode with more widget types
+
+### v0.1.0
+- Initial release with OAuth2 authentication
+- Simple and JSON modes
+- Basic widgets support
+
 ## Roadmap
 
 Future enhancements planned:
 - 🎨 Full visual builder with drag-and-drop
 - 📚 Template library for common use cases
 - 🔄 Card preview before sending
-- 📝 Form input widgets support
 - 🎯 Advanced action handlers
 - 🔧 Webhook response handling
 

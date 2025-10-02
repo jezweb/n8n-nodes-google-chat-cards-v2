@@ -28,11 +28,51 @@ export class GoogleChatCardsV2 implements INodeType {
 		credentials: [
 			{
 				name: 'googleChatOAuth2Api',
-				required: true,
+				required: false,
+				displayOptions: {
+					show: {
+						authMethod: ['oauth2'],
+					},
+				},
 			},
 		],
 		properties: [
-			// Space/Thread Selection
+			// Authentication Method
+			{
+				displayName: 'Authentication Method',
+				name: 'authMethod',
+				type: 'options',
+				default: 'webhook',
+				description: 'How to authenticate with Google Chat',
+				options: [
+					{
+						name: 'Webhook URL (Simple)',
+						value: 'webhook',
+						description: 'Just paste your webhook URL - easiest setup for sending messages',
+					},
+					{
+						name: 'OAuth2 (Advanced)',
+						value: 'oauth2',
+						description: 'For listing spaces and interactive features',
+					},
+				],
+			},
+			// Webhook URL
+			{
+				displayName: 'Webhook URL',
+				name: 'webhookUrl',
+				type: 'string',
+				default: '',
+				placeholder: 'https://chat.googleapis.com/v1/spaces/XXX/messages?key=XXX&token=XXX',
+				description: 'Paste your Google Chat webhook URL here. Get it from your space settings.',
+				required: true,
+				displayOptions: {
+					show: {
+						authMethod: ['webhook'],
+					},
+				},
+			},
+			// Space/Thread Selection (OAuth2 only)
 			{
 				displayName: 'Space Name or ID',
 				name: 'spaceId',
@@ -42,6 +82,11 @@ export class GoogleChatCardsV2 implements INodeType {
 				description: 'The Google Chat space to send the message to. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 				typeOptions: {
 					loadOptionsMethod: 'getSpaces',
+				},
+				displayOptions: {
+					show: {
+						authMethod: ['oauth2'],
+					},
 				},
 			},
 			{
@@ -53,6 +98,7 @@ export class GoogleChatCardsV2 implements INodeType {
 				displayOptions: {
 					show: {
 						'@version': [1],
+						authMethod: ['oauth2', 'webhook'],
 					},
 				},
 			},
@@ -388,6 +434,180 @@ export class GoogleChatCardsV2 implements INodeType {
 							},
 						],
 					},
+					{
+						name: 'grid',
+						displayName: 'Grid',
+						values: [
+							{
+								displayName: 'Grid Title',
+								name: 'title',
+								type: 'string',
+								default: '',
+								description: 'Optional title for the grid',
+							},
+							{
+								displayName: 'Rows',
+								name: 'rows',
+								type: 'fixedCollection',
+								typeOptions: {
+									multipleValues: true,
+									sortable: true,
+								},
+								default: {},
+								placeholder: 'Add Row',
+								options: [
+									{
+										name: 'row',
+										displayName: 'Row',
+										values: [
+											{
+												displayName: 'Cells',
+												name: 'cells',
+												type: 'string',
+												default: '',
+												description: 'Comma-separated cell values (e.g., "Name, Value, Status")',
+												required: true,
+											},
+										],
+									},
+								],
+							},
+							{
+								displayName: 'Column Count',
+								name: 'columnCount',
+								type: 'number',
+								default: 2,
+								description: 'Number of columns in the grid',
+								typeOptions: {
+									minValue: 1,
+									maxValue: 3,
+								},
+							},
+						],
+					},
+					{
+						name: 'textInput',
+						displayName: 'Text Input',
+						values: [
+							{
+								displayName: 'Label',
+								name: 'label',
+								type: 'string',
+								default: '',
+								description: 'Label for the input field',
+								required: true,
+							},
+							{
+								displayName: 'Field Name',
+								name: 'name',
+								type: 'string',
+								default: '',
+								description: 'Unique name for this input field',
+								required: true,
+							},
+							{
+								displayName: 'Hint Text',
+								name: 'hintText',
+								type: 'string',
+								default: '',
+								description: 'Placeholder or hint text',
+							},
+							{
+								displayName: 'Default Value',
+								name: 'value',
+								type: 'string',
+								default: '',
+								description: 'Initial value for the input',
+							},
+							{
+								displayName: 'Type',
+								name: 'type',
+								type: 'options',
+								default: 'SINGLE_LINE',
+								options: [
+									{ name: 'Single Line', value: 'SINGLE_LINE' },
+									{ name: 'Multiple Lines', value: 'MULTIPLE_LINE' },
+								],
+							},
+						],
+					},
+					{
+						name: 'selectionInput',
+						displayName: 'Selection Input',
+						values: [
+							{
+								displayName: 'Label',
+								name: 'label',
+								type: 'string',
+								default: '',
+								description: 'Label for the selection',
+								required: true,
+							},
+							{
+								displayName: 'Field Name',
+								name: 'name',
+								type: 'string',
+								default: '',
+								description: 'Unique name for this selection field',
+								required: true,
+							},
+							{
+								displayName: 'Type',
+								name: 'type',
+								type: 'options',
+								default: 'DROPDOWN',
+								options: [
+									{ name: 'Dropdown', value: 'DROPDOWN' },
+									{ name: 'Radio Buttons', value: 'RADIO_BUTTON' },
+									{ name: 'Checkboxes', value: 'CHECK_BOX' },
+									{ name: 'Switch', value: 'SWITCH' },
+									{ name: 'Multi-Select', value: 'MULTI_SELECT' },
+								],
+							},
+							{
+								displayName: 'Options',
+								name: 'items',
+								type: 'fixedCollection',
+								typeOptions: {
+									multipleValues: true,
+									sortable: true,
+								},
+								default: {},
+								placeholder: 'Add Option',
+								options: [
+									{
+										name: 'item',
+										displayName: 'Option',
+										values: [
+											{
+												displayName: 'Text',
+												name: 'text',
+												type: 'string',
+												default: '',
+												description: 'Display text for this option',
+												required: true,
+											},
+											{
+												displayName: 'Value',
+												name: 'value',
+												type: 'string',
+												default: '',
+												description: 'Value when this option is selected',
+												required: true,
+											},
+											{
+												displayName: 'Selected',
+												name: 'selected',
+												type: 'boolean',
+												default: false,
+												description: 'Whether this option is selected by default',
+											},
+										],
+									},
+								],
+							},
+						],
+					},
 				],
 			},
 			// JSON Mode Properties
@@ -464,7 +684,7 @@ export class GoogleChatCardsV2 implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const spaceId = this.getNodeParameter('spaceId', i) as string;
+				const authMethod = this.getNodeParameter('authMethod', i, 'webhook') as string;
 				const threadKey = this.getNodeParameter('threadKey', i, '') as string;
 				const buildMode = this.getNodeParameter('buildMode', i) as string;
 
@@ -481,25 +701,56 @@ export class GoogleChatCardsV2 implements INodeType {
 					}
 				}
 
-				// Prepare the request
-				const requestOptions: IHttpRequestOptions = {
-					method: 'POST' as IHttpRequestMethods,
-					url: `https://chat.googleapis.com/v1/${spaceId}/messages`,
-					body: messageBody,
-					qs: {} as any,
-				};
+				let response: any;
 
-				// Add thread key if provided
-				if (threadKey) {
-					requestOptions.qs!.threadKey = threadKey;
+				if (authMethod === 'webhook') {
+					// Webhook authentication - simpler approach
+					const webhookUrl = this.getNodeParameter('webhookUrl', i) as string;
+
+					// Validate webhook URL
+					if (!webhookUrl.includes('chat.googleapis.com')) {
+						throw new Error('Invalid webhook URL. Please use a valid Google Chat webhook URL.');
+					}
+
+					// Add thread key to body if provided
+					if (threadKey) {
+						messageBody.thread = { threadKey };
+					}
+
+					// Send via webhook
+					const requestOptions: IHttpRequestOptions = {
+						method: 'POST' as IHttpRequestMethods,
+						url: webhookUrl,
+						body: messageBody,
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					};
+
+					response = await this.helpers.httpRequest.call(this, requestOptions);
+				} else {
+					// OAuth2 authentication - original approach
+					const spaceId = this.getNodeParameter('spaceId', i) as string;
+
+					const requestOptions: IHttpRequestOptions = {
+						method: 'POST' as IHttpRequestMethods,
+						url: `https://chat.googleapis.com/v1/${spaceId}/messages`,
+						body: messageBody,
+						qs: {} as any,
+					};
+
+					// Add thread key if provided
+					if (threadKey) {
+						requestOptions.qs!.threadKey = threadKey;
+					}
+
+					// Send the message
+					response = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'googleChatOAuth2Api',
+						requestOptions,
+					);
 				}
-
-				// Send the message
-				const response = await this.helpers.httpRequestWithAuthentication.call(
-					this,
-					'googleChatOAuth2Api',
-					requestOptions,
-				);
 
 				returnData.push({
 					json: response,
@@ -611,6 +862,89 @@ function buildSimpleCard(this: IExecuteFunctions, itemIndex: number): any {
 					};
 				}
 				section.widgets.push(decoratedWidget);
+			}
+		}
+
+		// Add Grid widget
+		if (widgets.grid && Array.isArray(widgets.grid)) {
+			for (const grid of widgets.grid) {
+				const gridWidget: any = {
+					grid: {
+						columnCount: grid.columnCount || 2,
+						items: [],
+					},
+				};
+
+				if (grid.title) {
+					gridWidget.grid.title = grid.title;
+				}
+
+				if (grid.rows && grid.rows.row) {
+					for (const row of grid.rows.row) {
+						const cells = row.cells.split(',').map((cell: string) => cell.trim());
+						for (const cellText of cells) {
+							gridWidget.grid.items.push({
+								textParagraph: {
+									text: cellText,
+								},
+							});
+						}
+					}
+				}
+
+				section.widgets.push(gridWidget);
+			}
+		}
+
+		// Add TextInput widget
+		if (widgets.textInput && Array.isArray(widgets.textInput)) {
+			for (const input of widgets.textInput) {
+				const textInputWidget: any = {
+					textInput: {
+						label: input.label,
+						name: input.name,
+						type: input.type || 'SINGLE_LINE',
+					},
+				};
+
+				if (input.hintText) {
+					textInputWidget.textInput.hintText = input.hintText;
+				}
+
+				if (input.value) {
+					textInputWidget.textInput.initialValue = input.value;
+				}
+
+				section.widgets.push(textInputWidget);
+			}
+		}
+
+		// Add SelectionInput widget
+		if (widgets.selectionInput && Array.isArray(widgets.selectionInput)) {
+			for (const selection of widgets.selectionInput) {
+				const selectionWidget: any = {
+					selectionInput: {
+						label: selection.label,
+						name: selection.name,
+						type: selection.type || 'DROPDOWN',
+						items: [],
+					},
+				};
+
+				if (selection.items && selection.items.item) {
+					for (const item of selection.items.item) {
+						const selectionItem: any = {
+							text: item.text,
+							value: item.value,
+						};
+						if (item.selected) {
+							selectionItem.selected = true;
+						}
+						selectionWidget.selectionInput.items.push(selectionItem);
+					}
+				}
+
+				section.widgets.push(selectionWidget);
 			}
 		}
 
