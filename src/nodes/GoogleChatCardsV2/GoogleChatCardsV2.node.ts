@@ -717,17 +717,18 @@ export class GoogleChatCardsV2 implements INodeType {
 						messageBody.thread = { threadKey };
 					}
 
-					// Send via webhook
-					const requestOptions: IHttpRequestOptions = {
-						method: 'POST' as IHttpRequestMethods,
-						url: webhookUrl,
+					// Send via webhook using the simpler request helper
+					const requestOptions = {
+						method: 'POST' as const,
+						uri: webhookUrl,
 						body: messageBody,
+						json: true,
 						headers: {
 							'Content-Type': 'application/json',
 						},
 					};
 
-					response = await this.helpers.httpRequest.call(this, requestOptions);
+					response = await this.helpers.request(requestOptions);
 				} else {
 					// OAuth2 authentication - original approach
 					const spaceId = this.getNodeParameter('spaceId', i) as string;
